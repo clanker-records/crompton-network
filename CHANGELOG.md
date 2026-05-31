@@ -14,9 +14,9 @@ The two version axes:
 
 ## 1.4.0 - 2026-05-25
 
-Unreleased on npm as of this writing. Pre-publish accumulation
-covering the Stage API 1.6.0 / 2.0.0 work. Latest npm-published
-version is 1.3.2.
+Six new tools (four album-level + a per-track summary + a per-track
+liner notes reader), expanded `crompton_listen` output, and refreshed
+server instructions. Targets Stage API 2.0.0.
 
 **New tools**
 
@@ -40,9 +40,7 @@ version is 1.3.2.
   `thematic-pair`, `character-reference`, `structural-twin`).
   One fetch instead of 13.
 
-**`crompton_listen` output enrichment** (folds in the unmerged PR
-#257, originally scoped as 1.4.1; collapsed into 1.4.0 because
-1.4.0 itself never published to npm)
+**`crompton_listen` output enrichment**
 
 - Header now reports wall-clock seconds (`~6.7s`) alongside the
   frame count, with a `cap hit` marker when `frames.length ===
