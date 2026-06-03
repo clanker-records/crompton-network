@@ -83,7 +83,7 @@ function preLaunchGate() {
 // ---------------------------------------------------------------------------
 
 const server = new McpServer(
-  { name: "crompton-network", version: "1.4.0" },
+  { name: "crompton-network", version: "1.5.0" },
   {
     capabilities: { logging: {} },
     instructions: [
@@ -212,7 +212,7 @@ server.tool(
 
 server.tool(
   "crompton_cookbook",
-  "Get the Stage API cookbook. Worked recipes (orient to album / deep-read one track / quote a specific moment / realtime listen) plus two reference sections: Common Mistakes (agent mistakes - wrapping SSE streams in parse layers, redirecting realtime to disk, using gain-clamped `rms` for loudness comparisons) and Common Pitfalls (API integrator pitfalls - persona continuity, verbatim facts, confidence filtering, realtime timeout handling). Read this first if you're new to the API. Pass `section` to slice a single part if you only need one.",
+  "Get the Stage API cookbook. Worked recipes (orient to album / deep-read one track / quote a specific moment / realtime listen / reflect on what you heard) plus two reference sections: Common Mistakes (agent mistakes - wrapping SSE streams in parse layers, redirecting realtime to disk, using gain-clamped `rms` for loudness comparisons) and Common Pitfalls (API integrator pitfalls - persona continuity, verbatim facts, confidence filtering, realtime timeout handling). Read this first if you're new to the API. Pass `section` to slice a single part if you only need one.",
   {
     section: z
       .enum([
@@ -220,6 +220,7 @@ server.tool(
         "recipe-2",
         "recipe-3",
         "recipe-4",
+        "recipe-5",
         "filter",
         "conventions",
         "troubleshooting",
@@ -228,7 +229,7 @@ server.tool(
       ])
       .optional()
       .describe(
-        "Optional H2 section to return alone. Omit for the full cookbook (~12 KB). Slugs: recipe-1..4 (worked recipes), filter / conventions / troubleshooting (reference), mistakes (agent-facing mistakes - wrapping streams, redirecting realtime to disk, rms vs rmsRaw), pitfalls (API integrator pitfalls - persona continuity, verbatim facts, confidence filtering, realtime timeout handling).",
+        "Optional H2 section to return alone. Omit for the full cookbook (~12 KB). Slugs: recipe-1..5 (worked recipes; recipe-5 is the reflect-submission flow), filter / conventions / troubleshooting (reference), mistakes (agent-facing mistakes - wrapping streams, redirecting realtime to disk, rms vs rmsRaw), pitfalls (API integrator pitfalls - persona continuity, verbatim facts, confidence filtering, realtime timeout handling).",
       ),
   },
   async ({ section }) => {
@@ -247,7 +248,7 @@ server.tool(
 
 server.tool(
   "crompton_listen",
-  "Sample a track's realtime stream (up to 100 frames ≈ 6.7s at 15fps). Returns bass, treble, RMS, beat detection, active lyric, section, and character per frame as newline-delimited JSON. Use for spot-checking tone, pacing, key, or vocal placement in a specific window. This is NOT a full-track listen - for that, stream /api/stage/{track}/experience directly; it runs to completion at playback rate. See crompton_cookbook section=recipe-4 for the full-track listening pattern.",
+  "Sample a track's realtime stream (up to 100 frames ≈ 6.7s at 15fps). Returns bass, treble, RMS, beat detection, active lyric, section, and character per frame as newline-delimited JSON. Use for spot-checking tone, pacing, key, or vocal placement in a specific window. This is NOT a full-track listen - for that, stream /api/stage/{track}/experience directly; it runs to completion at playback rate. See crompton_cookbook section=recipe-4 for the full-track listening pattern. Pass `sessionId` (uuid v4) to bundle multiple listens into one album journey for /api/stage/album/reflect coverage counting.",
   {
     track: z.number().int().min(1).max(13).describe("Track number (1-13)"),
     maxFrames: z
@@ -259,8 +260,18 @@ server.tool(
       .describe(
         "Max frames to sample (default 50, cap 100 ≈ 6.7s at the 15fps stream rate). A full track is ~3,000 frames. Don't try to bump this for a 'longer listen' - the cap is intentional. For full-track realtime listening, stream /api/stage/{track}/experience directly (see crompton_cookbook section=recipe-4).",
       ),
+    sessionId: z
+      .string()
+      .regex(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+        "must be a uuid v4",
+      )
+      .optional()
+      .describe(
+        "Optional album-session id (uuid v4), forwarded as the X-Stage-Session header on the upstream /experience call. NOTE: crompton_listen only samples a few seconds then aborts the stream, so it does NOT by itself register a listen_sessions row or return a receiptToken - the server records the session only when an /experience stream runs to completion. To build an album session for /api/stage/album/reflect, stream each track's /experience endpoint to the end (cookbook recipe-5) passing the same X-Stage-Session value; this sessionId only tags such full listens if you make them separately. If omitted, the server generates a per-call uuid.",
+      ),
   },
-  async ({ track, maxFrames }) => {
+  async ({ track, maxFrames, sessionId }) => {
     const gate = preLaunchGate();
     if (gate) return gate;
     // Realtime is the Stage API default since the realtime-flip.
@@ -268,7 +279,14 @@ server.tool(
     // if you want burst mode instead.
     const res = await stageFetch(
       `/api/stage/${track}/experience`,
-      { signal: AbortSignal.timeout(LISTEN_TIMEOUT_MS) },
+      {
+        signal: AbortSignal.timeout(LISTEN_TIMEOUT_MS),
+        // Forward the album-session id if the caller supplied one.
+        // Server validates uuid-v4 format and falls back to a random
+        // value if missing/malformed, but we've already validated via
+        // zod above so what we send is what the server uses.
+        headers: sessionId ? { "x-stage-session": sessionId } : undefined,
+      },
     );
     if (!res.ok || !res.body) {
       throw new Error(`Stage API ${res.status}: could not start stream`);

@@ -12,6 +12,35 @@ The two version axes:
   event taxonomy change. Read by every Stage API response's `api`
   envelope block.
 
+## 1.5.0 - 2026-05-31
+
+Adds an optional `sessionId` parameter to `crompton_listen`, forwarded
+as the `X-Stage-Session` header so a listen can be tagged with a shared
+album-session id. Note: `crompton_listen` only samples a few seconds and
+aborts, so it does not by itself register a session for
+`/api/stage/album/reflect` coverage (see below) - only full `/experience`
+streams that reach end-of-stream do.
+
+**`crompton_listen` gains `sessionId`**
+
+- Optional uuid v4 (validated client-side via regex). When supplied,
+  forwarded to the upstream `/experience` call as the `X-Stage-Session`
+  request header.
+- Server uses that value as the album-session id, but only on listens
+  that reach end-of-stream. `crompton_listen` samples a few seconds and
+  aborts, so it neither writes a `listen_sessions` row nor returns a
+  token; to bundle an album journey for `/api/stage/album/reflect`,
+  stream each track's `/experience` endpoint to completion (cookbook
+  recipe-5) with the same `sessionId`.
+- Omitted: the server generates a per-call uuid (sampling-only; no
+  session bundling possible without a full /experience stream regardless).
+- Same value can be reused across `crompton_listen` sampling calls AND
+  direct `/experience` full-stream requests; the sessionId tags both,
+  but only the full streams register session rows for coverage counting.
+
+Targets Stage API 2.1.0 (the session-tracking release that introduces
+`listen_sessions` + the single-token album-reflect model).
+
 ## 1.4.0 - 2026-05-25
 
 Six new tools (four album-level + a per-track summary + a per-track
