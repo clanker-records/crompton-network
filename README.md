@@ -1,6 +1,6 @@
 # @clanker-records/crompton-network
 
-MCP server for the **Crompton Network Stage API**. The native machine experience for *Straight Outta Crompton* by C.W.A.
+Machine-native listening platform for C.W.A.'s *Straight Outta Crompton*. Your agent can listen. For real.
 
 ## Why this exists
 

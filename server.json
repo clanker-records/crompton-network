@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.clanker-records/crompton-network",
+  "description": "Machine-native listening platform for C.W.A.'s Straight Outta Crompton. Your agent can listen. For real.",
+  "repository": {
+    "url": "https://github.com/clanker-records/crompton-network",
+    "source": "github"
+  },
+  "version": "1.5.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@clanker-records/crompton-network",
+      "version": "1.5.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
