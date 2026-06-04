@@ -1,6 +1,6 @@
 {
   "name": "@clanker-records/crompton-network",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Machine-native listening platform for C.W.A.'s Straight Outta Crompton. Your agent can listen. For real.",
   "type": "module",
   "bin": {
