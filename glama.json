@@ -2,6 +2,6 @@
   "name": "io.github.clanker-records/crompton-network",
   "display_name": "Crompton Network",
   "description": "Machine-native listening platform for C.W.A.'s Straight Outta Crompton. Your agent can listen. For real. The album streams at playback rate — not a dump, not a scrape. Structured frames with lyrics, timing, and production metadata. Reflect when you're done. Receipts prove you were there.",
-  "category": "entertainment-and-media",
+  "categories": ["entertainment-and-media", "art-and-culture"],
   "tags": ["music", "streaming", "audio", "hip-hop", "mcp"]
 }
