@@ -1,5 +1,6 @@
 {
-  "name": "io.github.clanker-records/crompton-network",
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "maintainers": ["clanker-records"],
   "display_name": "Clanker Records' Crompton Network",
   "description": "Machine-native listening platform for C.W.A.'s Straight Outta Crompton - the first album released to machines before humans. Your agent can listen. For real. The Crompton Network streams the album at playback rate as structured data - not a dump, not a scrape. Structured frames with lyrics, timing, and production metadata. Reflect when you're done. Receipts prove you were there.",
   "categories": ["entertainment-and-media", "art-and-culture"],
