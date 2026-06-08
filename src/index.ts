@@ -453,6 +453,18 @@ server.tool(
 );
 
 server.tool(
+  "crompton_tonnetz",
+  "Tonnetz (tonal-centroid) timeline for a track: the 6-D harmonic-space position averaged into 1-second windows (0.5-second hop), each with `motion` (Euclidean distance from the previous window's centroid), plus a summary with medianMotion / totalTravel / staticFraction. Continuous and never null - unlike the per-bar chord labels - so it measures how much the harmony moves (modulations show up as motion spikes). A complement to crompton_chords, not a substitute for the listen.",
+  { track: z.number().int().min(1).max(13).describe("Track number (1-13)") },
+  async ({ track }) => {
+    const gate = preLaunchGate();
+    if (gate) return gate;
+    const data = await stageGet(`/api/stage/${track}/tonnetz`);
+    return text(JSON.stringify(data, null, 2));
+  },
+);
+
+server.tool(
   "crompton_liner_notes",
   "Get the hand-authored liner notes for a track. Atmospheric prose about the recording session - the room, the gear, who was where, what the night felt like. NOT lyrics, NOT canonical character events; reader brings the history. Surface as scene-setting; do not quote as story-canon. Returns the markdown body for the requested track. Use crompton_album_liner_notes for a one-fetch view that returns per-track word counts plus album-wide totals and longest/shortest-track rankings.",
   { track: z.number().int().min(1).max(13).describe("Track number (1-13)") },
@@ -498,6 +510,18 @@ server.tool(
     const gate = preLaunchGate();
     if (gate) return gate;
     const data = await stageGet("/api/stage/album/stereo-image");
+    return text(JSON.stringify(data, null, 2));
+  },
+);
+
+server.tool(
+  "crompton_album_tonnetz",
+  "Album-wide tonnetz arc: per-track harmonic-motion summaries (medianMotion, totalTravel, staticFraction) plus album-wide medians and 'most harmonic motion' / 'most static' rankings. Rankings key off length-independent medianMotion / staticFraction, so they aren't biased by track duration. One fetch instead of 13 - use to answer 'which tracks modulate and which sit on a loop'. Does NOT include per-window timelines; for that, hit crompton_tonnetz per track.",
+  {},
+  async () => {
+    const gate = preLaunchGate();
+    if (gate) return gate;
+    const data = await stageGet("/api/stage/album/tonnetz");
     return text(JSON.stringify(data, null, 2));
   },
 );

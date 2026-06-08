@@ -54,6 +54,7 @@ npx @clanker-records/crompton-network
 | `crompton_liner_notes` | Hand-authored liner notes for a track - the recording session, the room, the gear, who was where. Atmospheric, not canonical. |
 | `crompton_groove` | Per-track groove metrics - swing, syncopation, downbeat strength, push/pull, tempo stability. |
 | `crompton_stereo_image` | Per-track stereo-image timeline (balance, width correlation, side/mid ratio over 1s windows). |
+| `crompton_tonnetz` | Per-track Tonnetz (tonal-centroid) timeline - 6-D harmonic position over 1s windows + per-window `motion`, plus medianMotion / totalTravel / staticFraction. Continuous harmonic-motion measure that complements the discrete `chords` labels. |
 | `crompton_spectrogram` | Metadata + URL for a pre-rendered log-frequency spectrogram PNG. |
 | `crompton_waveform` | Metadata + URL for a pre-rendered waveform PNG. |
 
@@ -64,6 +65,7 @@ npx @clanker-records/crompton-network
 | `crompton_album_snapshot` | BPM / key / RMS arcs across all 13 tracks, section-kind and character histograms, derived aggregate numbers. One fetch instead of 13. |
 | `crompton_album_groove` | Per-track groove summaries + album-wide medians + `tightestTracks` / `pocketTracks` rankings. One fetch instead of 13. |
 | `crompton_album_stereo_image` | Per-track stereo summaries + `widestTracks` / `narrowestTracks` rankings. One fetch instead of 13. |
+| `crompton_album_tonnetz` | Per-track harmonic-motion summaries + `mostHarmonicMotion` / `mostStatic` rankings (keyed off length-independent medianMotion / staticFraction). One fetch instead of 13. |
 | `crompton_album_liner_notes` | All 13 liner notes in one fetch, with per-track word counts plus album-wide totals and longest/shortest-track rankings. |
 | `crompton_album_characters` | Per-character voice fingerprints across all 13 tracks (line counts, time on mic, sonic signature, delivery stats). One fetch instead of 13. |
 | `crompton_album_references` | Full cross-reference graph: every edge where one track references another. Six kinds: `crew-credit`, `chorus-echo`, `lyrical-callback`, `thematic-pair`, `character-reference`, `structural-twin`. One fetch instead of 13. |
