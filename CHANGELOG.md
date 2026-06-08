@@ -12,6 +12,25 @@ The two version axes:
   event taxonomy change. Read by every Stage API response's `api`
   envelope block.
 
+## 1.6.0 - 2026-06-08
+
+Adds two MCP tools for the Tonnetz (tonal-centroid) audio-evidence
+surface shipped in Stage API 2.4.0. Both proxy new public endpoints; no
+transport or existing-tool changes. Tool count 22 -> 24.
+
+**Two new tools**
+
+- `crompton_tonnetz` (track 1-13) - per-track Tonnetz timeline: the 6-D
+  tonal-centroid position over 1-second windows (0.5s hop) plus
+  per-window `motion`, and a summary (medianMotion / totalTravel /
+  staticFraction). Continuous and never null, unlike the discrete
+  `crompton_chords` labels, so it measures how far the harmony travels
+  and where it modulates.
+- `crompton_album_tonnetz` - album-wide harmonic-motion summaries plus
+  `mostHarmonicMotion` / `mostStatic` rankings (keyed off
+  length-independent medianMotion / staticFraction, not duration-biased
+  totalTravel). One fetch instead of 13.
+
 ## 1.5.0 - 2026-05-31
 
 Adds an optional `sessionId` parameter to `crompton_listen`, forwarded
